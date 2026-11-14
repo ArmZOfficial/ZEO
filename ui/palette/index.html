@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: zen:; style-src 'self'; script-src 'self'; font-src 'self'">
+<title>Command Palette</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="./palette.css">
+</head>
+<body>
+<div class="scrim" id="scrim"></div>
+<div class="palette glass-pop" role="dialog" aria-label="Command Palette">
+  <div class="p-input">
+    <span class="prompt"><i data-icon="forward" data-size="16" data-stroke="2.2"></i></span>
+    <label for="cmd" class="sr-only">พิมพ์คำสั่งหรือค้นหาแท็บ</label>
+    <input id="cmd" autocomplete="off" spellcheck="false" placeholder="พิมพ์คำสั่ง ค้นหาแท็บ ประวัติ หรือบุ๊กมาร์ก"
+           role="combobox" aria-expanded="true" aria-controls="list" aria-autocomplete="list">
+    <span class="kbd boxed">Esc</span>
+  </div>
+  <div class="p-list" id="list" role="listbox"></div>
+  <div class="p-foot">
+    <span>↑↓ เลือก</span><span>↵ เปิด</span><span>Ctrl ↵ แท็บใหม่</span><span class="grow"></span><span>ZEO</span>
+  </div>
+</div>
+<script src="../shared/icons.js"></script>
+<script src="../shared/bridge.js"></script>
+<script src="./palette.js"></script>
+</body>
+</html>

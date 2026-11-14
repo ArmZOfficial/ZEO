@@ -1,0 +1,10 @@
+[workspace]
+resolver = "3"
+members = ["crates/zeo-shields", "crates/zeo-app"]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true

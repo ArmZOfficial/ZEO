@@ -1,0 +1,7 @@
+[package]
+name = "zeo-shields"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+adblock = "0.13.5"

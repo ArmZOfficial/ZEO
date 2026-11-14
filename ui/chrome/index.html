@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: zen:; style-src 'self'; script-src 'self'; font-src 'self'">
+<title>ZEO</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="./chrome.css">
+</head>
+<body>
+<div class="window" id="window">
+
+  <!-- แถว 1: นำทาง + ช่อง URL + โปรไฟล์ -->
+  <header class="row-top" data-drag>
+    <div class="logo" aria-hidden="true">Z</div>
+    <div class="nav-center">
+      <button class="icon-btn" id="btn-back" aria-label="ย้อนกลับ (Alt+←)"><i data-icon="back" data-stroke="2"></i></button>
+      <button class="icon-btn" id="btn-forward" aria-label="ไปข้างหน้า (Alt+→)"><i data-icon="forward" data-stroke="2"></i></button>
+      <div class="omnibox" id="omnibox">
+        <button class="omni-btn" id="btn-reload" aria-label="โหลดใหม่ (F5)"><i data-icon="reload" data-size="12" data-stroke="2"></i></button>
+        <label for="omni-input" class="sr-only">ค้นหาหรือพิมพ์ที่อยู่เว็บ</label>
+        <div class="omni-display" id="omni-display"><span class="host" id="omni-host"></span><span class="secure" id="omni-secure"></span></div>
+        <input id="omni-input" class="omni-input" spellcheck="false" autocomplete="off" placeholder="ค้นหา หรือพิมพ์ที่อยู่เว็บ" hidden>
+        <button class="omni-btn" id="btn-star" aria-label="เพิ่มบุ๊กมาร์ก (Ctrl+D)"><i data-icon="star" data-size="13" data-stroke="2"></i></button>
+        <button class="shield-btn" id="btn-shields" aria-label="ZEO Shields"><i data-icon="shield" data-size="12" data-stroke="2.1"></i><span id="shield-count">0</span></button>
+      </div>
+      <div class="nav-spacer"></div>
+    </div>
+    <button class="icon-btn" id="btn-downloads" aria-label="ดาวน์โหลด (Ctrl+J)"><i data-icon="download" data-stroke="2"></i></button>
+    <button class="avatar" id="btn-profile" aria-label="เมนูโปรไฟล์" aria-haspopup="menu" aria-expanded="false">A</button>
+    <span class="divider"></span>
+    <button class="win-btn" data-win="minimize" aria-label="ย่อหน้าต่าง"><i data-icon="minimize" data-size="10" data-stroke="2.2"></i></button>
+    <button class="win-btn" data-win="maximize" aria-label="ขยายหน้าต่าง"><i data-icon="maximize" data-size="9" data-stroke="2.4"></i></button>
+    <button class="win-btn win-close" data-win="close" aria-label="ปิดหน้าต่าง"><i data-icon="close" data-size="10" data-stroke="2.2"></i></button>
+  </header>
+
+  <!-- แถว 2: แท็บ -->
+  <nav class="row-tabs" data-drag>
+    <button class="group-chip" id="group-chip"><span class="dot"></span><span id="group-name">งาน</span></button>
+    <div class="tabs-center">
+      <div class="tabs" id="tabs" role="tablist" aria-label="แท็บ"></div>
+      <button class="icon-btn small" id="btn-newtab" aria-label="แท็บใหม่ (Ctrl+T)"><i data-icon="plus" data-size="12" data-stroke="2"></i></button>
+    </div>
+    <span class="kbd">Ctrl K</span>
+  </nav>
+
+  <!-- แถว 3: แถบบุ๊กมาร์ก -->
+  <div class="row-bookmarks" id="bookmark-bar" aria-label="แถบบุ๊กมาร์ก">
+    <div class="bm-list" id="bm-list"></div>
+    <button class="bm-item muted" data-open="bookmarks"><i data-icon="folder" data-size="12" data-stroke="2"></i>บุ๊กมาร์กทั้งหมด</button>
+  </div>
+
+  <!-- พื้นที่หน้าเว็บ: Rust วาง tab view ทับตรงนี้ (ดู README) -->
+  <main class="viewport" id="viewport"></main>
+
+  <!-- เมนูโปรไฟล์ -->
+  <div class="pop menu glass-pop" id="pop-menu" role="menu" aria-label="เมนูโปรไฟล์" hidden>
+    <div class="menu-head"><span>เข้าสู่ระบบเป็น</span><span id="profile-label">ArmZ · ส่วนตัว</span></div>
+    <div class="menu-body">
+      <div class="menu-sec">หน้า</div>
+      <button class="mi" role="menuitem" data-cmd="tab:new"><i data-icon="plus"></i><span>แท็บใหม่</span><span class="kbd">Ctrl T</span></button>
+      <button class="mi" role="menuitem" data-cmd="window:new"><i data-icon="window"></i><span>หน้าต่างใหม่</span><span class="kbd">Ctrl N</span></button>
+      <button class="mi" role="menuitem" data-cmd="window:new-private"><i data-icon="private"></i><span>หน้าต่างส่วนตัว</span><span class="kbd">Ctrl ⇧ N</span></button>
+      <div class="menu-sec">ตัวเลือกหน้า</div>
+      <button class="mi" role="menuitem" data-cmd="page:find"><i data-icon="search"></i><span>ค้นหาในหน้า</span><span class="kbd">Ctrl F</span></button>
+      <div class="mi static">
+        <i data-icon="zoom"></i><span>ซูม</span>
+        <button class="zoom-btn" id="zoom-out" aria-label="ซูมออก (Ctrl+-)"><i data-icon="back" data-size="11" data-stroke="2.2"></i></button>
+        <span class="zoom-val" id="zoom-val">100%</span>
+        <button class="zoom-btn" id="zoom-in" aria-label="ซูมเข้า (Ctrl+=)"><i data-icon="forward" data-size="11" data-stroke="2.2"></i></button>
+      </div>
+      <div class="menu-sec">คอลเลกชัน</div>
+      <button class="mi" role="menuitem" data-open="bookmarks"><i data-icon="star"></i><span>บุ๊กมาร์ก</span><span class="kbd">Ctrl ⇧ O</span></button>
+      <button class="mi" role="menuitem" data-open="history"><i data-icon="history"></i><span>ประวัติ</span><span class="kbd">Ctrl H</span></button>
+      <button class="mi" role="menuitem" data-open="downloads"><i data-icon="download"></i><span>ดาวน์โหลด</span><span class="kbd">Ctrl J</span></button>
+      <div class="menu-sec">แอป</div>
+      <button class="mi" role="menuitem" data-pop="shields"><i data-icon="shieldCheck"></i><span>ZEO Shields</span><span class="kbd"></span></button>
+      <button class="mi" role="menuitem" data-open="settings"><i data-icon="settings"></i><span>ตั้งค่า</span><span class="kbd">Ctrl ,</span></button>
+    </div>
+  </div>
+
+  <!-- บุ๊กมาร์ก -->
+  <form class="pop bookmark glass-pop" id="pop-bookmark" hidden>
+    <div class="pop-title">บันทึกบุ๊กมาร์กแล้ว</div>
+    <label for="bm-name">ชื่อ</label>
+    <input id="bm-name" class="field" autocomplete="off">
+    <label for="bm-folder">โฟลเดอร์</label>
+    <select id="bm-folder" class="field"></select>
+    <div class="pop-actions">
+      <button type="button" class="btn ghost" id="bm-remove">ลบ</button>
+      <button type="submit" class="btn primary">เสร็จ</button>
+    </div>
+  </form>
+
+  <!-- ZEO Shields -->
+  <div class="pop shields glass-pop" id="pop-shields" role="dialog" aria-label="ZEO Shields" hidden>
+    <div class="sh-head">
+      <div class="sh-icon" id="sh-icon"><i data-icon="shieldCheck" data-size="16"></i></div>
+      <div><div class="pop-title">ZEO Shields</div><div class="sh-host" id="sh-host"></div></div>
+    </div>
+    <button class="sh-toggle" id="sh-toggle" aria-pressed="true">
+      <div><div class="sh-t1">ป้องกันเว็บนี้</div><div class="sh-t2" id="sh-label"></div></div>
+      <span class="switch"><span class="knob"></span></span>
+    </button>
+    <div class="sh-stats">
+      <div><b id="sh-ads">0</b><span>โฆษณา</span></div>
+      <div><b id="sh-trackers">0</b><span>ตัวติดตาม</span></div>
+      <div><b id="sh-mb">0</b><span>MB ประหยัด</span></div>
+    </div>
+    <div class="segmented" id="sh-level" role="radiogroup" aria-label="ระดับการบล็อก">
+      <button role="radio" data-level="standard">มาตรฐาน</button>
+      <button role="radio" data-level="strict">เข้มงวด</button>
+      <button role="radio" data-level="off">ปิด</button>
+    </div>
+    <button class="btn ghost wide" id="sh-broken"><i data-icon="warning" data-size="13"></i>เว็บนี้แสดงผลผิดปกติ?</button>
+  </div>
+</div>
+
+<script src="../shared/icons.js"></script>
+<script src="../shared/bridge.js"></script>
+<script src="./chrome.js"></script>
+</body>
+</html>
